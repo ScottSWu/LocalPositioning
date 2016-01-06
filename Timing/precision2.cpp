@@ -36,7 +36,7 @@ int main() {
     gettime(t);
     gettime(n);
     for (int i = 0, l = rows * cols; i < l; i++) {
-        while ((diff = m3diff(t, n)) <= 0) gettime(n);
+        while ((diff = m3diff(t, n)) <= 1) gettime(n);
         result[index++] = diff;
         t = n;
     }
@@ -44,7 +44,7 @@ int main() {
     gettime(t);
     gettime(n);
     for (int i = 0, l = rows * cols; i < l; i++) {
-        while ((diff = m5diff(t, n)) <= 0) gettime(n);
+        while ((diff = m5diff(t, n)) <= 1) gettime(n);
         result[index++] = diff;
         t = n;
     }
@@ -52,7 +52,7 @@ int main() {
     gettime(t);
     gettime(n);
     for (int i = 0, l = rows * cols; i < l; i++) {
-        while ((diff = m5diff(t, n)) <= 0) gettime(n);
+        while ((diff = m5diff(t, n)) <= 1) gettime(n);
         result[index++] = diff;
         t = n;
     }
@@ -60,7 +60,7 @@ int main() {
     gettime(t);
     gettime(n);
     for (int i = 0, l = rows * cols; i < l; i++) {
-        while ((diff = m6diff(t, n)) <= 0) gettime(n);
+        while ((diff = m6diff(t, n)) <= 1) gettime(n);
         result[index++] = diff;
         t = n;
     }
@@ -72,7 +72,7 @@ int main() {
         int bad = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (result[index++] != 1) {
+                if (result[index++] != 2) {
                     bad++;
                 }
                 //printf("%d ", result[index++]);
