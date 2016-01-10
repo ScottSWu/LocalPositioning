@@ -3,14 +3,14 @@
 CC=gcc
 MAKE=make
 
-CFLAGS=-O3
-LIBS=-l bcm2835
+CFLAGS=-O3 -std=c++11
+LIBS=-l bcm2835 -l rt
 
 .PHONY: all setup clean
 
 all: sensor.x
 
-%.x: %.c
+%.x: %.cpp
 	gcc -o $@ $(CFLAGS) $< $(LIBS)
 
 setup:
