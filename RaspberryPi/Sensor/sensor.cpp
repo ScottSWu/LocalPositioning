@@ -45,6 +45,11 @@ int main() {
     bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
 
     while (!kill) {
+        // Timing variables
+        timespec ts;
+        int tmr, tme;
+
+        // Detection stage
         int detect = 0;
         int s0 = 0;
         int s1 = 0;
@@ -53,10 +58,9 @@ int main() {
         int s4 = 0;
         int s5 = 0;
         int s6 = 0;
-        int s7 = 0;
         int prev = 0;
         int prevc = 1;
-        while (!detect) { // Detection stage
+        while (!detect) {
             int read = read_adc(7) > 40;
             if (read == prev) { // Still running
                 prevc++;
@@ -69,13 +73,12 @@ int main() {
                 s3 = s4;
                 s4 = s5;
                 s5 = s6;
-                s6 = s7;
-                s7 = prevc;
+                s6 = prevc;
 
                 // A - 1010 110010
                 // B - 1010 110100
                 // Detection
-                if (prev == 0 && s0 > 3 && s0 < 30) {
+                if (prev == 1 && s0 > 3 && s0 < 30) {
                     // Bounds
                     int sub = (s0 + s1) / 2 + 4;
                     int llb = s0 + s1 - 4;
@@ -87,8 +90,10 @@ int main() {
                         llb <= s5 &&
                         s6 <= sub) {
                         detect = 1;
+                        clock_gettime(CLOCK_MONOTONIC, &ts);
+                        tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
                     }
-                    printf("%d %d %d %d %d %d %d %d\n", s0, s1, s2, s3, s4, s5, s6, s7);
+                    printf("%d %d %d %d %d %d %d\n", s0, s1, s2, s3, s4, s5, s6);
                 }
 
                 // Reset counter
@@ -97,6 +102,26 @@ int main() {
             }
         }
         printf("Detected!\n");
+        // Reading stage
+        prev = 0;
+        tme = tmr;
+        while (tme - tmr < 900) {
+            // Get the current time
+            clock_gettime(CLOCK_MONOTONIC, &ts);
+            tme = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+            int read = read_adc(7);
+            // Filter out noise
+            if (read > 20) {
+                // Make sure this is a new peak
+                if (prev - 8 > read || read > prev + 8) {
+                    printf("%d %d\n", read, tme - tmr);
+                    prev = read;
+                }
+            }
+            else {
+                prev = 0;
+            }
+        }
     }
 
     bcm2835_spi_end();
