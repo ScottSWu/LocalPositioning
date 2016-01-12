@@ -49,13 +49,13 @@
 #define LED_ALLOFF(t)   LED_OFF(t,0); LED_OFF(t,1); LED_OFF(t,2); LED_OFF(t,3); LED_OFF(t,4); LED_OFF(t,5); LED_OFF(t,6); LED_OFF(t,7); LED_OFF(t,8)
 
 // Timings (milliseconds for now)
-// Header code timings (total time is 16 * SHORT)
-#define LED_HEADER_SHORT    4
-#define LED_HEADER_LONG     8
+// Header code timings (total time is 10 * SHORT)
+#define LED_HEADER_SHORT    5
+#define LED_HEADER_LONG     10
 // Delay after the header
-#define LED_HEADER_DELAY    36
+#define LED_HEADER_DELAY    50
 
-// Per LED time on (total time is (ON + OFF) * 9)
+// Per LED time on (total time is (ON + OFF) * 9 + DELAY)
 #define LED_TIME_ON         40
 // Per LED time off
 #define LED_TIME_OFF        50
@@ -64,6 +64,9 @@
 #define LED_TIME_DELAY      90
 
 // Everything adds up to 1000 now
+#define LED_HEADER_TOTAL    50
+#define LED_TIME_TOTAL      810
+#define LED_TOTAL           1000
 
 // Timing functions
 #define SYNC_INIT()     unsigned long ss, se, st
