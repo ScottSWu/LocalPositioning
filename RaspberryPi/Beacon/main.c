@@ -83,7 +83,42 @@ static msg_t Thread2(void *p) {
         SYNC_WAIT(LED_TIME_DELAY);
         
         // Second set of LEDs
-        // TODO
+        // Header
+        LED_ALLON(1);  SYNC_WAIT(LED_HEADER_SHORT);
+        LED_ALLOFF(1); SYNC_WAIT(LED_HEADER_SHORT);
+        LED_ALLON(1);  SYNC_WAIT(LED_HEADER_SHORT);
+        LED_ALLOFF(1); SYNC_WAIT(LED_HEADER_SHORT);
+        
+        LED_ALLON(1);  SYNC_WAIT(LED_HEADER_LONG);
+        LED_ALLOFF(1); SYNC_WAIT(LED_HEADER_LONG);
+        LED_ALLON(1);  SYNC_WAIT(LED_HEADER_SHORT);
+        LED_ALLOFF(1); SYNC_WAIT(LED_HEADER_SHORT);
+        
+        SYNC_WAIT(LED_HEADER_DELAY);
+        
+        // LEDs
+        // For the RPi port, this is essentially microseconds.
+        LED_ON(1, 0);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 0); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 1);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 1); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 2);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 2); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 3);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 3); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 4);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 4); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 5);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 5); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 6);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 6); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 7);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 7); SYNC_WAIT(LED_TIME_OFF);
+        LED_ON(1, 8);  SYNC_WAIT(LED_TIME_ON);
+        LED_OFF(1, 8); SYNC_WAIT(LED_TIME_OFF);
+        
+        // Final pause
+        SYNC_WAIT(LED_TIME_DELAY);
     }
     return 0;
 }
