@@ -56,17 +56,17 @@
 #define LED_HEADER_DELAY    50
 
 // Per LED time on (total time is (ON + OFF) * 9 + DELAY)
-#define LED_TIME_ON         40
+#define LED_TIME_ON         20
 // Per LED time off
-#define LED_TIME_OFF        50
+#define LED_TIME_OFF        20
 
 // Delay after LEDs
-#define LED_TIME_DELAY      90
+#define LED_TIME_DELAY      40
 
 // Everything adds up to 1000 now
 #define LED_HEADER_TOTAL    50
-#define LED_TIME_TOTAL      810
-#define LED_TOTAL           1000
+#define LED_TIME_TOTAL      360
+#define LED_TOTAL           500
 
 // Timing functions
 #define SYNC_INIT()     unsigned long ss, se, st

@@ -1,6 +1,7 @@
 #define SAMPLES_PER_READ 8
 
-#include "sensor.hpp"
+#include "sensor.h"
+#include "beacon.h"
 #include <bcm2835.h>
 #include <stdio.h>
 #include <time.h>
@@ -11,12 +12,6 @@ int read_raw_adc(int ch) {
 
     xfer[1] = (8 + ch) << 4;
     bcm2835_spi_transfernb(xfer, recv, 3);
-
-    /*
-    printf("Ch %d: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-        ch, recv[0], recv[1], recv[2], recv[3],
-        recv[4], recv[5], recv[6], recv[7]);
-    */
 
     return ((recv[1] & 3) << 8) + recv[2];
 }
@@ -93,7 +88,7 @@ int main() {
                         clock_gettime(CLOCK_MONOTONIC, &ts);
                         tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
                     }
-                    printf("%d %d %d %d %d %d %d\n", s0, s1, s2, s3, s4, s5, s6);
+                    //printf("%d %d %d %d %d %d %d\n", s0, s1, s2, s3, s4, s5, s6);
                 }
 
                 // Reset counter
@@ -105,16 +100,16 @@ int main() {
         // Reading stage
         prev = 0;
         tme = tmr;
-        while (tme - tmr < 900) {
+        while (tme - tmr < LED_TOTAL - LED_TIME_TOTAL - LED_HEADER_DELAY) {
             // Get the current time
             clock_gettime(CLOCK_MONOTONIC, &ts);
             tme = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
             int read = read_adc(7);
             // Filter out noise
-            if (read > 20) {
+            if (read > 30) {
                 // Make sure this is a new peak
                 if (prev - 8 > read || read > prev + 8) {
-                    printf("%d %d\n", read, tme - tmr);
+                    printf("%d\t%d\n", tme - tmr - LED_HEADER_DELAY, read);
                     prev = read;
                 }
             }

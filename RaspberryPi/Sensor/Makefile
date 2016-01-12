@@ -3,7 +3,7 @@
 CC=gcc
 MAKE=make
 
-CFLAGS=-O3 -std=c++11
+CFLAGS=-O3 -std=c++11 -I ../Beacon
 LIBS=-l bcm2835 -l rt
 
 .PHONY: all setup clean
