@@ -21,12 +21,12 @@ def read_adc(ch):
 
 def main():
     while True:
-        #print "{0:4d} {1:4d} {2:4d} {3:4d} {4:4d} {5:4d} {6:4d} {7:4d}".format(
-        #        read_adc(0), read_adc(1), read_adc(2), read_adc(3),
-        #        read_adc(4), read_adc(5), read_adc(6), read_adc(7))
-        lread = read_adc(CH_LEFT)
-        rread = read_adc(CH_RIGHT)
-        print "Left: {0:4d}    Right: {1:4d}".format(lread, rread)
+        print "{0:4d} {1:4d} {2:4d} {3:4d} {4:4d} {5:4d} {6:4d} {7:4d}".format(
+                read_adc(0), read_adc(1), read_adc(2), read_adc(3),
+                read_adc(4), read_adc(5), read_adc(6), read_adc(7))
+        #lread = read_adc(CH_LEFT)
+        #rread = read_adc(CH_RIGHT)
+        #print "Left: {0:4d}    Right: {1:4d}".format(lread, rread)
         time.sleep(0.25)
 
 main()
