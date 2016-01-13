@@ -77,14 +77,20 @@ int main() {
                     // Bounds
                     int sub = (s0 + s1) / 2 + 4;
                     int llb = s0 + s1 - 4;
-                    if (s0 <= sub &&
-                        s1 <= sub &&
-                        s2 <= sub &&
-                        s3 <= sub &&
-                        llb <= s4 &&
-                        llb <= s5 &&
-                        s6 <= sub) {
+                    // Beacon 1
+                    if (s0 <= sub && s1 <= sub &&
+                        s2 <= sub && s3 <= sub &&
+                        llb <= s4 && llb <= s5 && s6 <= sub) {
                         detect = 1;
+                        clock_gettime(CLOCK_MONOTONIC, &ts);
+                        tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+                    }
+                    // Beacon 2
+                    else if (
+                        s0 <= sub && s1 <= sub &&
+                        s2 <= sub && s3 <= sub &&
+                        llb <= s4 && s5 <= sub && llb <= s6) {
+                        detect = 2;
                         clock_gettime(CLOCK_MONOTONIC, &ts);
                         tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
                     }
@@ -96,11 +102,11 @@ int main() {
                 prevc = 1;
             }
         }
-        printf("Detected!\n");
+        printf("Detected %d!\n", detect);
         // Reading stage
         prev = 0;
         tme = tmr;
-        while (tme - tmr < LED_TOTAL - LED_TIME_TOTAL - LED_HEADER_DELAY) {
+        while (tme - tmr < LED_TIME_TOTAL + LED_HEADER_DELAY + 10) {
             // Get the current time
             clock_gettime(CLOCK_MONOTONIC, &ts);
             tme = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
