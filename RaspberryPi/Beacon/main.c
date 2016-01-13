@@ -59,7 +59,6 @@ static msg_t Thread2(void *p) {
         SYNC_WAIT(LED_HEADER_DELAY);
         
         // LEDs
-        // For the RPi port, this is essentially microseconds.
         LED_ON(0, 0);  SYNC_WAIT(LED_TIME_ON);
         LED_OFF(0, 0); SYNC_WAIT(LED_TIME_OFF);
         LED_ON(0, 1);  SYNC_WAIT(LED_TIME_ON);
@@ -97,7 +96,6 @@ static msg_t Thread2(void *p) {
         SYNC_WAIT(LED_HEADER_DELAY);
         
         // LEDs
-        // For the RPi port, this is essentially microseconds.
         LED_ON(1, 0);  SYNC_WAIT(LED_TIME_ON);
         LED_OFF(1, 0); SYNC_WAIT(LED_TIME_OFF);
         LED_ON(1, 1);  SYNC_WAIT(LED_TIME_ON);
@@ -142,7 +140,7 @@ int main(void) {
     palSetPadMode(LED_0_6_PORT, LED_0_6_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_0_7_PORT, LED_0_7_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_0_8_PORT, LED_0_8_PAD, PAL_MODE_OUTPUT);
-    /*
+    
     palSetPadMode(LED_1_0_PORT, LED_1_0_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_1_1_PORT, LED_1_1_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_1_2_PORT, LED_1_2_PAD, PAL_MODE_OUTPUT);
@@ -152,7 +150,6 @@ int main(void) {
     palSetPadMode(LED_1_6_PORT, LED_1_6_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_1_7_PORT, LED_1_7_PAD, PAL_MODE_OUTPUT);
     palSetPadMode(LED_1_8_PORT, LED_1_8_PAD, PAL_MODE_OUTPUT);
-    */
 
     // Run indicator
     chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
