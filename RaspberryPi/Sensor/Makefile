@@ -19,6 +19,9 @@ setup:
 run:
 	sudo ./sensor.x
 
+serve:
+	sudo nc.traditional -l -p 4444 -c './sensor.x'
+
 clean:
 	-rm sensor.x
 

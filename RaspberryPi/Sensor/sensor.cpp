@@ -77,7 +77,7 @@ int main() {
                     }
                 }
                 else {
-                    printf("%d %3d %3d\n", s.channel, s.peak_time, s.peak_intensity);
+                    printf("%d %d %3d %3d\n", s.channel, s.detect_type, s.peak_time, s.peak_intensity);
                     fflush(stdout);
                     s.clear();
                 }
