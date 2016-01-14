@@ -16,6 +16,9 @@ all: sensor.x
 setup:
 	cd bcm2835 && ./configure && $(MAKE) && $(MAKE) check && $(MAKE) install
 
+run:
+	sudo ./sensor.x
+
 clean:
 	-rm sensor.x
 

@@ -42,15 +42,13 @@ int main() {
     };
     int sensors = sizeof(sl) / sizeof(*sl);
 
-    int i;
     timespec ts;
     unsigned int ct;
 
     // Loop
     while (!kill) {
         // For each sensor
-        i = sensors;
-        while (i-->0) {
+        for (int i = 0; i < sensors; i++) {
             Sensor &s = sl[i];
             if (s.detect_type < 0) { // Detection state
                 int read = read_adc(s.channel) > 40;
@@ -79,6 +77,8 @@ int main() {
                     }
                 }
                 else {
+                    printf("%d %3d %3d\n", s.channel, s.peak_time, s.peak_intensity);
+                    fflush(stdout);
                     s.clear();
                 }
             }
