@@ -10,7 +10,7 @@ LIBS=-l bcm2835 -l rt
 
 all: sensor.x
 
-%.x: %.cpp
+%.x: %.cpp %.h
 	gcc -o $@ $(CFLAGS) $< $(LIBS)
 
 setup:

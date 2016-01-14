@@ -1,10 +1,4 @@
-#define SAMPLES_PER_READ 8
-
 #include "sensor.h"
-#include "beacon.h"
-#include <bcm2835.h>
-#include <stdio.h>
-#include <time.h>
 
 int read_raw_adc(int ch) {
     char xfer[3] = {1, 0, 0};
@@ -31,100 +25,67 @@ void siginth(int t) {
 }
 
 int main() {
+    // Initialize bcm2835 library
     if (!bcm2835_init()) {
         return 1;
     }
 
+    // Initialize SPI interface
     bcm2835_spi_begin();
     
     bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
 
+    // Initialize sensors
+    Sensor sl[2] = {
+        Sensor(0), // Facing down
+        Sensor(7)  // Facing up
+    };
+    int sensors = sizeof(sl) / sizeof(*sl);
+
+    int i;
+    timespec ts;
+    unsigned int ct;
+
+    // Loop
     while (!kill) {
-        // Timing variables
-        timespec ts;
-        int tmr, tme;
-
-        // Detection stage
-        int detect = 0;
-        int s0 = 0;
-        int s1 = 0;
-        int s2 = 0;
-        int s3 = 0;
-        int s4 = 0;
-        int s5 = 0;
-        int s6 = 0;
-        int prev = 0;
-        int prevc = 1;
-        while (!detect) {
-            int read = read_adc(7) > 40;
-            if (read == prev) { // Still running
-                prevc++;
-            }
-            else { // Edge
-                // Shift runs down
-                s0 = s1;
-                s1 = s2;
-                s2 = s3;
-                s3 = s4;
-                s4 = s5;
-                s5 = s6;
-                s6 = prevc;
-
-                // A - 1010 110010
-                // B - 1010 110100
-                // Detection
-                if (prev == 1 && s0 > 3 && s0 < 30) {
-                    // Bounds
-                    int sub = (s0 + s1) / 2 + 4;
-                    int llb = s0 + s1 - 4;
-                    // Beacon 1
-                    if (s0 <= sub && s1 <= sub &&
-                        s2 <= sub && s3 <= sub &&
-                        llb <= s4 && llb <= s5 && s6 <= sub) {
-                        detect = 1;
-                        clock_gettime(CLOCK_MONOTONIC, &ts);
-                        tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-                    }
-                    // Beacon 2
-                    else if (
-                        s0 <= sub && s1 <= sub &&
-                        s2 <= sub && s3 <= sub &&
-                        llb <= s4 && s5 <= sub && llb <= s6) {
-                        detect = 2;
-                        clock_gettime(CLOCK_MONOTONIC, &ts);
-                        tmr = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-                    }
-                    //printf("%d %d %d %d %d %d %d\n", s0, s1, s2, s3, s4, s5, s6);
+        // For each sensor
+        i = sensors;
+        while (i-->0) {
+            Sensor &s = sl[i];
+            if (s.detect_type < 0) { // Detection state
+                int read = read_adc(s.channel) > 40;
+                if (read == s.detection_prev) {
+                    s.detection_counter++;
                 }
+                else { // Edge
+                    s.detection_shift(read);
 
-                // Reset counter
-                prev = read;
-                prevc = 1;
-            }
-        }
-        printf("Detected %d!\n", detect);
-        // Reading stage
-        prev = 0;
-        tme = tmr;
-        while (tme - tmr < LED_TIME_TOTAL + LED_HEADER_DELAY + 10) {
-            // Get the current time
-            clock_gettime(CLOCK_MONOTONIC, &ts);
-            tme = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-            int read = read_adc(7);
-            // Filter out noise
-            if (read > 30) {
-                // Make sure this is a new peak
-                if (prev - 8 > read || read > prev + 8) {
-                    printf("%d\t%d\n", tme - tmr - LED_HEADER_DELAY, read);
-                    prev = read;
+                    clock_gettime(CLOCK_MONOTONIC, &ts);
+                    ct = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+                    s.detection_test(ct);
                 }
             }
-            else {
-                prev = 0;
+            else { // Reading state
+                clock_gettime(CLOCK_MONOTONIC, &ts);
+                ct = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+                if (s.read_time(ct)) {
+                    int read = read_adc(s.channel);
+                    // Filter out noise
+                    if (read > 30) {
+                        s.peak_test(ct, read);
+                    }
+                    else {
+                        s.peak_prev = 0;
+                    }
+                }
+                else {
+                    s.clear();
+                }
             }
         }
     }
 
+    // Stop the interface
     bcm2835_spi_end();
 }
 
