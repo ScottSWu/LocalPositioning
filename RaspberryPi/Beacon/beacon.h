@@ -56,9 +56,9 @@
 #define LED_HEADER_DELAY    50
 
 // Per LED time on (total time is (ON + OFF) * 9 + DELAY)
-#define LED_TIME_ON         20
+#define LED_TIME_ON         10
 // Per LED time off
-#define LED_TIME_OFF        20
+#define LED_TIME_OFF        30
 
 // Delay after LEDs
 #define LED_TIME_DELAY      40

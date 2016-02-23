@@ -1,0 +1,22 @@
+<html>
+<head>
+    <script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
+    <script type="text/javascript">
+//
+window.addEventListener("load", function() {
+    var sio = io("ws://localhost:4001");
+    sio.on("pos", function(data) {
+        document.getElementById("container").innerHTML = data.x + " , " + data.y;
+    });
+});
+//
+    </script>
+    <style type="text/css">
+/**/
+/**/
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+</body>
+</html>
