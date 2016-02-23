@@ -1,3 +1,4 @@
+#include <signal.h>
 #include "sensor.h"
 
 int read_raw_adc(int ch) {
@@ -18,10 +19,10 @@ int read_adc(int ch) {
     return int(total / SAMPLES_PER_READ);
 }
 
-static volatile int kill = 0;
+static volatile int is_kill = 0;
 
-void siginth(int t) {
-    kill = 1;
+void siginth(int s) {
+    is_kill = 1;
 }
 
 int main() {
@@ -30,15 +31,21 @@ int main() {
         return 1;
     }
 
+    // Catch Control-C
+    signal(SIGINT, siginth);
+
     // Initialize SPI interface
     bcm2835_spi_begin();
+    printf("Initialized\n");
     
     bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
 
     // Initialize sensors
-    Sensor sl[2] = {
-        Sensor(0), // Facing down
-        Sensor(7)  // Facing up
+    Sensor sl[4] = {
+        Sensor(0), // Line 0 (furthest from front)
+        Sensor(1), // Line 1
+        Sensor(2), // Line 2 (closest to front)
+        Sensor(7)  // Pointing forward
     };
     int sensors = sizeof(sl) / sizeof(*sl);
 
@@ -46,7 +53,7 @@ int main() {
     unsigned int ct;
 
     // Loop
-    while (!kill) {
+    while (!is_kill) {
         // For each sensor
         for (int i = 0; i < sensors; i++) {
             Sensor &s = sl[i];
@@ -72,12 +79,10 @@ int main() {
                     if (read > 30) {
                         s.peak_test(ct, read);
                     }
-                    else {
-                        s.peak_prev = 0;
-                    }
                 }
                 else {
-                    printf("%d %d %3d %3d\n", s.channel, s.detect_type, s.peak_time, s.peak_intensity);
+                    // Display results
+                    s.display_results();
                     fflush(stdout);
                     s.clear();
                 }
@@ -86,6 +91,7 @@ int main() {
     }
 
     // Stop the interface
+    printf("Stopped\n");
     bcm2835_spi_end();
 }
 

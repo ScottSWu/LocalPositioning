@@ -5,6 +5,7 @@
 #include <time.h>
 
 #define SAMPLES_PER_READ 2
+#define MAX_PEAKS 8
 
 class Sensor {
     public:
@@ -16,30 +17,32 @@ class Sensor {
     
         int detect_type;
         unsigned int detect_time;
-        int peak_prev;
-        int peak_time;
-        int peak_intensity;
+        int peak_index = 0;
+        int peak_prev_time[3];
+        int peak_prev_intensity[3];
+        int peak_time[MAX_PEAKS];
+        int peak_intensity[MAX_PEAKS];
         
-        Sensor(int ch) : channel(ch),
-            detection{0, 0, 0, 0, 0, 0, 0}, detection_prev(0), detection_counter(1),
-            detect_type(-1), detect_time(0),
-            peak_prev(0), peak_time(0), peak_intensity(0) {
+        Sensor(int ch) : channel(ch) {
+            clear();
         }
 
         void clear() {
-            detection[0] = 0;
-            detection[1] = 0;
-            detection[2] = 0;
-            detection[3] = 0;
-            detection[4] = 0;
-            detection[5] = 0;
-            detection[6] = 0;
+            for (int i = 0; i < 7; i++) {
+                detection[i] = 0;
+            }
             detection_prev = 0;
             detection_counter = 1;
             detect_type = -1;
-            peak_prev = 0;
-            peak_time = -1;
-            peak_intensity = 0;
+            peak_index = 0;
+            for (int i = 0; i < 3; i++) {
+                peak_prev_time[i] = 0;
+                peak_prev_intensity[i] = 0;
+            }
+            for (int i = 0; i < MAX_PEAKS; i++) {
+                peak_time[i] = 0;
+                peak_intensity[i] = 0;
+            }
         }
 
         void detection_shift(int read) {
@@ -96,10 +99,28 @@ class Sensor {
         }
 
         void peak_test(unsigned int ct, int read) {
-            if (read >= peak_intensity + 8) {
-                peak_intensity = read;
-                peak_time = ct - detect_time - LED_HEADER_DELAY;
+            peak_prev_time[0] = peak_prev_time[1];
+            peak_prev_intensity[0] = peak_prev_intensity[1];
+            peak_prev_time[1] = peak_prev_time[2];
+            peak_prev_intensity[1] = peak_prev_intensity[2];
+            peak_prev_time[2] = ct;
+            peak_prev_intensity[2] = read;
+
+            if (peak_index < MAX_PEAKS &&
+                peak_prev_intensity[1] > peak_prev_intensity[0] + 4 &&
+                peak_prev_intensity[1] + 2 > peak_prev_intensity[2]) {
+                peak_intensity[peak_index] = peak_prev_intensity[1];
+                peak_time[peak_index] = peak_prev_time[1] - detect_time - LED_HEADER_DELAY;
+                peak_index++;
             }
+        }
+
+        void display_results() {
+            printf("%d %d", channel, detect_type);
+            for (int i = 0; i < peak_index; i++) {
+                printf("%6d%6d", peak_time[i], peak_intensity[i]);
+            }
+            printf("\n");
         }
 };
 

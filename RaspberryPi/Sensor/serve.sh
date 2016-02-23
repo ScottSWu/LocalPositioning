@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nc.traditional -l -p 4444 -c './sensor.x'
+nc.traditional -l -p 4000 -c './sensor.x'

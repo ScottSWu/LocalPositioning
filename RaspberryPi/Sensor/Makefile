@@ -16,11 +16,11 @@ all: sensor.x
 setup:
 	cd bcm2835 && ./configure && $(MAKE) && $(MAKE) check && $(MAKE) install
 
-run:
+run: sensor.x
 	sudo ./sensor.x
 
 serve:
-	sudo nc.traditional -l -p 4444 -c './sensor.x'
+	sudo nc.traditional -l -p 4000 -c './sensor.x'
 
 clean:
 	-rm sensor.x
